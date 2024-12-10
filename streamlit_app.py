@@ -1,9 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
+import time as systime  # For delays
 
 # Streamlit App
-st.title("Ball Rolling Down a Curve Simulation")
+st.title("Ball Rolling Down a Curve Simulation (Dynamic)")
 st.markdown(
     """
     This simulation shows a ball rolling down a curve based on gravitational acceleration. 
@@ -53,19 +54,26 @@ for t in time[1:]:
 # Calculate y positions from x
 y = curve(np.array(x))
 
-# Plot the results
-fig, ax = plt.subplots(figsize=(10, 6))
-# Plot the curve
-x_curve = np.linspace(min(x), max(x), 500)
-ax.plot(x_curve, curve(x_curve), label="Curve", color="blue")
-# Plot the ball's path
-ax.plot(x, y, label="Ball path", color="red", linestyle="--")
-ax.scatter(x[0], y[0], color="green", label="Start", zorder=5)
-ax.set_xlabel("x")
-ax.set_ylabel("y")
-ax.set_title("Ball Rolling Down a Curve")
-ax.legend()
-ax.grid()
+# Set up dynamic visualization
+st.write("Visualizing the ball rolling...")
 
-# Display the plot in Streamlit
-st.pyplot(fig)
+placeholder = st.empty()  # Placeholder for dynamic updates
+
+for i in range(len(x)):
+    # Create a new plot for each frame
+    fig, ax = plt.subplots(figsize=(10, 6))
+    # Plot the curve
+    x_curve = np.linspace(min(x), max(x), 500)
+    ax.plot(x_curve, curve(x_curve), label="Curve", color="blue")
+    # Plot the ball's current position
+    ax.plot(x[:i], y[:i], label="Ball path", color="red", linestyle="--")
+    ax.scatter(x[i], y[i], color="green", label="Ball", zorder=5, s=100)
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.set_title("Ball Rolling Down a Curve")
+    ax.legend()
+    ax.grid()
+    # Update the Streamlit placeholder
+    placeholder.pyplot(fig)
+    # Add a delay for animation effect
+    systime.sleep(0.01)
